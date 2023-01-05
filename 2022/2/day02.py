@@ -85,13 +85,11 @@ with open("input.txt") as f:
 
 rounds = [x for x in lines.split("\n") if x != ""]
 rounds_list = [tuple(r.split(" ")) for r in rounds]
-rounds_symbols = [RoundPart1(OpponentSymbols[x[0]], PlayerSymbols[x[1]]) for x in rounds_list]
 
-answer_part1 = sum([score_round(x) for x in rounds_symbols])
+rounds_symbols_part1 = [RoundPart1(OpponentSymbols[x[0]], PlayerSymbols[x[1]]) for x in rounds_list]
+answer_part1 = sum([score_round(x) for x in rounds_symbols_part1])
+print(f"Part 1: {answer_part1}")
 
 rounds_symbols_part2 = [RoundPart2(OpponentSymbols[x[0]], RoundSymbols[x[1]]) for x in rounds_list]
-
 answer_part2 = sum([score_round_part2(x) for x in rounds_symbols_part2])
-
-print(f"Part 1: {answer_part1}")
 print(f"Part 2: {answer_part2}")
