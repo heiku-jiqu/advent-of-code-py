@@ -18,7 +18,9 @@ def split_list(l: list[str], s: str) -> list:
 grouped_list = split_list([line.rstrip() for line in lines], "")
 grouped_int_list = [[int(x) for x in l] for l in grouped_list]
 sum_list = [sum(l) for l in grouped_int_list]
-output = max(sum_list)
+output_part1 = max(sum_list)
+output_part2 = sum(sorted(sum_list)[-3:])
 
-print(output)
+print(f"Part 1: {output_part1}")
+print(f"Part 2: {output_part2}")
 
