@@ -32,28 +32,28 @@ class RoundSymbols(Enum):
     Z = RoundResult.WIN
 
 
-def score_round(round: Tuple[OpponentSymbols, PlayerSymbols]):
+def score_round(round: Tuple[OpponentSymbols, PlayerSymbols]) -> int:
     if round[1].value == round[0].value:
-        result = 3
+        result = RoundResult.DRAW
     elif round[1].value == HandShape.Rock:
         if round[0].value == HandShape.Scissors:
-            result = 6
+            result = RoundResult.WIN
         else:
-            result = 0
+            result = RoundResult.LOSE
     elif round[1].value == HandShape.Paper:
         if round[0].value == HandShape.Rock:
-            result = 6
+            result = RoundResult.WIN
         else:
-            result = 0
+            result = RoundResult.LOSE
     elif round[1].value == HandShape.Scissors:
         if round[0].value == HandShape.Paper:
-            result = 6
+            result = RoundResult.WIN
         else:
-            result = 0
-    return result + round[1].value.value
+            result = RoundResult.LOSE
+    return result.value + round[1].value.value
 
 
-def score_round_part2(round: Tuple[OpponentSymbols, RoundSymbols]):
+def score_round_part2(round: Tuple[OpponentSymbols, RoundSymbols]) -> int:
     match round[1].value:
         case RoundResult.DRAW:
             player_shape = round[0].value
