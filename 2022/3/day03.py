@@ -13,6 +13,9 @@ class Rucksack:
     def find_common_item(self) -> set:
         return set(self.compartment1).intersection(self.compartment2)
 
+    def find_group_badge(self, y, z) -> set:
+        return set(self.string).intersection(y.string).intersection(z.string)
+
 
 def get_priority(item) -> int:
     for (i, char) in enumerate(ascii_letters):
@@ -28,3 +31,13 @@ answer_part1 = sum(
 )
 
 print(f"Part 1: {answer_part1}")
+
+rucksacks = [Rucksack(line.rstrip()) for line in lines]
+answer_part2 = sum(
+    [
+        get_priority(x.find_group_badge(y, z))
+        for (x, y, z) in zip(rucksacks[::3], rucksacks[1::3], rucksacks[2::3])
+    ]
+)
+
+print(f"Part 2: {answer_part2}")
