@@ -13,15 +13,18 @@ class Rucksack:
     def find_common_item(self) -> set:
         return set(self.compartment1).intersection(self.compartment2)
 
-    def get_priority(self) -> int:
-        for (i, char) in enumerate(ascii_letters):
-            if char in self.find_common_item():
-                return i + 1
+
+def get_priority(item) -> int:
+    for (i, char) in enumerate(ascii_letters):
+        if char in item:
+            return i + 1
 
 
 with open("input.txt") as f:
     lines = f.readlines()
 
-answer_part1 = sum([Rucksack(line.rstrip()).get_priority() for line in lines])
+answer_part1 = sum(
+    [get_priority(Rucksack(line.rstrip()).find_common_item()) for line in lines]
+)
 
 print(f"Part 1: {answer_part1}")
