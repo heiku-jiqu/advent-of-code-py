@@ -1,5 +1,6 @@
 from re import findall
 from dataclasses import dataclass
+from copy import deepcopy
 
 with open("input.txt") as f:
     input = [s.rstrip("\n") for s in f.readlines()]
@@ -45,9 +46,24 @@ def do_move(stacks, move: Move):
         do_move(stacks, new_move)
 
 
+def do_move_part2(stacks, move: Move):
+    stacks[move.to_stack - 1] = (
+        stacks[move.to_stack - 1] + stacks[move.from_stack - 1][-move.num_move :]
+    )
+    stacks[move.from_stack - 1] = stacks[move.from_stack - 1][: -move.num_move]
+
+
 start_stacks = parse_input_stacks(input_start_stacks)
 parsed_moves = parse_moves(input_move_list)
+start_stacks_p2 = deepcopy(start_stacks)
+parsed_moves_p2 = deepcopy(parsed_moves)
+
 for move in parsed_moves:
     do_move(start_stacks, move)
 part1_answer = "".join([s[-1] for s in start_stacks])
 print(f"Part 1: {part1_answer}")
+
+for move in parsed_moves_p2:
+    do_move_part2(start_stacks_p2, move)
+part2_answer = "".join([s[-1] for s in start_stacks_p2])
+print(f"Part 2: {part2_answer}")
