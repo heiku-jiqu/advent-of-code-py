@@ -29,7 +29,7 @@ class Directory:
     def get_dirsize(self, fs):
         if len(self.child_dirs) == 0:
             return self.get_filesize()
-         else:
+        else:
             return self.get_filesize + sum(
                 fs[child].get_dirsize(fs) for child in self.child_dirs
             )
