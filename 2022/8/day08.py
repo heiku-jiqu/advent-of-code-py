@@ -9,6 +9,7 @@ class Grid:
     row_len: int = field(init=False)
     col_len: int = field(init=False)
     visibility: list[list[bool]] = field(init=False)
+    scenic_score: list[list[int]] = field(init=False)
 
     def __post_init__(self):
         self.row_len = len(self.grid[0])
@@ -22,8 +23,10 @@ class Grid:
             self.visible_col(j, view_from="bottom") for j in range(self.col_len)
         ]
         self.visibility = list()
+        self.scenic_score = list()
         for i in range(self.row_len):
             self.visibility.append([])
+            self.scenic_score.append([])
             for j in range(self.col_len):
                 self.visibility[i].append(
                     self.visible_left[i][j]
@@ -31,6 +34,7 @@ class Grid:
                     or self.visible_top[j][i]
                     or self.visible_bottom[j][i]
                 )
+                self.scenic_score[i].append(self.get_scenic_score(i, j))
 
     @classmethod
     def from_str_array(cls, input: list[str]):
@@ -80,6 +84,33 @@ class Grid:
 
         return visibility if view_from == "top" else [t for t in reversed(visibility)]
 
+    def get_scenic_score(self, x, y):
+        tree = self.grid[x][y]
+        left, right, up, down = 0, 0, 0, 0
+
+        # look left
+        for i in reversed(range(y)):
+            left += 1
+            if self.grid[x][i] >= tree:
+                break
+        # look right
+        for i in range(y + 1, self.row_len):
+            right += 1
+            if self.grid[x][i] >= tree:
+                break
+        # look up
+        for j in reversed(range(x)):
+            up += 1
+            if self.grid[j][y] >= tree:
+                break
+        # look right
+        for j in range(x + 1, self.col_len):
+            down += 1
+            if self.grid[j][y] >= tree:
+                break
+
+        return left * right * up * down
+
 
 if __name__ == "__main__":
     with open("input.txt") as f:
@@ -89,3 +120,6 @@ if __name__ == "__main__":
     g = Grid.from_str_array(input)
     part1_ans = sum([sum(row) for row in g.visibility])
     print(f"Part 1: {part1_ans}")
+
+    part2_ans = max([max(row) for row in g.scenic_score])
+    print(f"Part 2: {part2_ans}")
