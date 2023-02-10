@@ -51,6 +51,7 @@ def update_tail(new_head: Position, old_tail: Position) -> Position:
         or (x_diff, y_diff) == (-1, 0)
         or (x_diff, y_diff) == (0, 1)
         or (x_diff, y_diff) == (0, -1)
+        or (abs(x_diff), abs(y_diff)) == (1, 1)
     ):
         return old_tail
     # new head 2 tiles L/R/U/D of old tail
@@ -85,21 +86,26 @@ def update_tail(new_head: Position, old_tail: Position) -> Position:
         return old_tail
 
 
-with open("input.txt") as f:
-    input = f.readlines()
+if __name__ == "__main__":
+    with open("input.txt") as f:
+        input = f.readlines()
 
-# head and tail start at same position
-h_pos = Position(0, 0)
-t_pos = Position(0, 0)
-visited = [(h_pos, t_pos)]
+    # head and tail start at same position
+    h_pos = Position(0, 0)
+    t_pos = Position(0, 0)
+    visited = [(h_pos, t_pos)]
+    num_moves = 0
 
-for i, line in enumerate(input):
-    direction, length = line.split(" ")
-    # print(f"direction: {direction}, length: {length}")
-    for i in range(int(length)):
-        h_pos, t_pos = move_one_step(direction, h_pos, t_pos)
-        print(f"{h_pos}, {t_pos}")
-        visited.append((h_pos, t_pos))
-    if i == 2:
-        break
+    for i, line in enumerate(input):
+        direction, length = line.split(" ")
+        num_moves = num_moves + int(length)
+        # print(f"direction: {direction}, length: {length}")
+        for i in range(int(length)):
+            h_pos, t_pos = move_one_step(direction, h_pos, t_pos)
+            # print(f"{h_pos}, {t_pos}")
+            visited.append(deepcopy((h_pos, t_pos)))
 
+    tail_visited = set()
+    for v in visited:
+        tail_visited.add((v[1].x, v[1].y))
+    print(f"Part 1: {len(tail_visited)}")
