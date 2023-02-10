@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, List
 from copy import deepcopy
 
 
@@ -38,6 +38,21 @@ def move_one_step(
 
     new_tail = update_tail(new_head, tail)
     return (new_head, new_tail)
+
+
+def move_one_step_multi_knots(direction: str, knots: List[Position]) -> List[Position]:
+    if direction == "R":
+        knots[0].x = knots[0].x + 1
+    if direction == "L":
+        knots[0].x = knots[0].x - 1
+    if direction == "U":
+        knots[0].y = knots[0].y + 1
+    if direction == "D":
+        knots[0].y = knots[0].y - 1
+
+    for knot_num in range(len(knots) - 1):
+        new_tail = update_tail(knots[knot_num], knots[knot_num + 1])
+    return knots
 
 
 def update_tail(new_head: Position, old_tail: Position) -> Position:
@@ -94,11 +109,9 @@ if __name__ == "__main__":
     h_pos = Position(0, 0)
     t_pos = Position(0, 0)
     visited = [(h_pos, t_pos)]
-    num_moves = 0
 
     for i, line in enumerate(input):
         direction, length = line.split(" ")
-        num_moves = num_moves + int(length)
         # print(f"direction: {direction}, length: {length}")
         for i in range(int(length)):
             h_pos, t_pos = move_one_step(direction, h_pos, t_pos)
@@ -109,3 +122,21 @@ if __name__ == "__main__":
     for v in visited:
         tail_visited.add((v[1].x, v[1].y))
     print(f"Part 1: {len(tail_visited)}")
+
+    def simulate_rope(rope_len: str):
+        visited = set()
+        pos_list = list()
+        for i in range(rope_len):
+            pos_list.append(Position(0, 0))
+
+        for line in input:
+            direction, length = line.split(" ")
+            for i in range(int(length)):
+                pos_list = move_one_step_multi_knots(direction, pos_list)
+                visited.add((pos_list[-1].x, pos_list[-1].y))
+        print(pos_list)
+        return visited
+
+    part2_tail_visited = simulate_rope(10)
+    print(f"Part 2: {len(part2_tail_visited)}")
+
