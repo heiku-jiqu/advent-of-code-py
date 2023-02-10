@@ -85,19 +85,19 @@ def update_tail(new_head: Position, old_tail: Position) -> Position:
     # new head 2 tiles L/R/U/D of old tail and 1 tile L/R/U/D of old tail
     elif x_diff == 2:
         old_tail.x = old_tail.x + 1
-        old_tail.y = old_tail.y + y_diff
+        old_tail.y = old_tail.y + y_diff / abs(y_diff)
         return old_tail
     elif x_diff == -2:
         old_tail.x = old_tail.x - 1
-        old_tail.y = old_tail.y + y_diff
+        old_tail.y = old_tail.y + y_diff / abs(y_diff)
         return old_tail
     elif y_diff == 2:
         old_tail.y = old_tail.y + 1
-        old_tail.x = old_tail.x + x_diff
+        old_tail.x = old_tail.x + x_diff / abs(x_diff)
         return old_tail
     elif y_diff == -2:
         old_tail.y = old_tail.y - 1
-        old_tail.x = old_tail.x + x_diff
+        old_tail.x = old_tail.x + x_diff / abs(x_diff)
         return old_tail
 
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         tail_visited.add((v[1].x, v[1].y))
     print(f"Part 1: {len(tail_visited)}")
 
-    def simulate_rope(rope_len: str):
+    def simulate_rope(rope_len: str, input: List[str]):
         visited = set()
         pos_list = list()
         for i in range(rope_len):
@@ -134,9 +134,8 @@ if __name__ == "__main__":
             for i in range(int(length)):
                 pos_list = move_one_step_multi_knots(direction, pos_list)
                 visited.add((pos_list[-1].x, pos_list[-1].y))
-        print(pos_list)
         return visited
 
-    part2_tail_visited = simulate_rope(10)
+    part2_tail_visited = simulate_rope(10, input)
     print(f"Part 2: {len(part2_tail_visited)}")
 
