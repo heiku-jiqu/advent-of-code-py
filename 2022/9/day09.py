@@ -32,9 +32,9 @@ def move_one_step(
     if direction == "L":
         new_head.x = head.x - 1
     if direction == "U":
-        new_head.x = head.y + 1
+        new_head.y = head.y + 1
     if direction == "D":
-        new_head.x = head.y - 1
+        new_head.y = head.y - 1
 
     new_tail = update_tail(new_head, tail)
     return (new_head, new_tail)
