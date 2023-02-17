@@ -28,6 +28,26 @@ def sum_special_registers(registers: List[int]) -> int:
     return sum([registers[i - 1] * i for i in special_registers])
 
 
+def render_image(registers: List[int]):
+    image_str = ""
+    line_str = ""
+    for i, reg in enumerate(registers):
+        sprite_pos = [reg - 1, reg, reg + 1]
+        if i % 40 in sprite_pos:
+            line_str = line_str + "#"
+        else:
+            line_str = line_str + "."
+
+        if i + 1 in list(range(0, 240, 40)):
+            line_str = line_str + "\n"
+
+        if i % 40 == 0:
+            image_str = image_str + line_str
+            line_str = ""
+
+    return image_str
+
+
 if __name__ == "__main__":
     with open("input.txt") as f:
         input = f.readlines()
@@ -36,6 +56,8 @@ if __name__ == "__main__":
     registers = parse_input(input)
     part1_answer = sum_special_registers(registers)
     print(f"Part 1: {part1_answer}")
+    print(f"Part 2: ")
+    print(render_image(registers))
 
 
 class TestFunctions(unittest.TestCase):
@@ -71,7 +93,5 @@ class TestFunctions(unittest.TestCase):
         input = [line.strip() for line in input]
         registers = parse_input(input)
         answer = sum_special_registers(registers)
-        print(registers)
-        print(get_special_registers(registers))
         self.assertEqual(13140, answer)
 
