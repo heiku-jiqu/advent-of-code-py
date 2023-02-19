@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, List, Self, Dict
 from unittest import TestCase
+from math import floor
 
 
 class Monkey:
@@ -8,6 +9,7 @@ class Monkey:
         self.items: List[int]
         self.operation: Callable
         self.test: Callable[[int], int]
+        self.num_inspect: int = 0
 
     def parse_items(self, s: str) -> Self:
         split_string = s.replace("Starting items: ", "").split(", ")
@@ -40,9 +42,7 @@ class Monkey:
         true_monkey = int(true_str.split(' ')[-1])
         false_monkey = int(false_str.split(' ')[-1])
         self.test = lambda worry: true_monkey if worry % divisor == 0 else false_monkey
-
         return self
-
 
 def parse_input(input: str) -> List[List[str]]:
     parsed = [chunk.split("\n") for chunk in input.split("\n\n")]
@@ -62,7 +62,6 @@ def get_monkeys(parsed: List[List[str]]) -> Dict[int, Monkey]:
                 next(iter_config)
             )
         )
-    
     return output
 
 
@@ -70,12 +69,20 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         input = f.read()
     parsed_input = parse_input(input)
-    print(parsed_input)
     monkeys = get_monkeys(parsed_input)
-    print(monkeys)
 
-    
-
+    for _ in range(20):
+        for mk in monkeys.values():
+            num_items = len(mk.items)
+            for i in range(num_items):
+                mk.num_inspect += 1
+                item = floor(mk.operation(mk.items.pop(0)) / 3)
+                target_mk_num = mk.test(item)
+                monkeys[target_mk_num].items.append(item)
+    part1_num_inspects = sorted([x.num_inspect for x in monkeys.values()])
+    part1_answer = part1_num_inspects[-1] * part1_num_inspects[-2]
+    print(f"Part 1: {part1_answer}")
+            
 
 class TestMonkey(TestCase):
     def test_parse_items(self):
