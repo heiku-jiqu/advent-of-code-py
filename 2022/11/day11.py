@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, List, Self
+from typing import Callable, List, Self, Dict
 from unittest import TestCase
 
 
@@ -48,13 +48,33 @@ def parse_input(input: str) -> List[List[str]]:
     parsed = [chunk.split("\n") for chunk in input.split("\n\n")]
     return [[line.strip() for line in chunk if line.strip() != ""] for chunk in parsed]
 
+def get_monkeys(parsed: List[List[str]]) -> Dict[int, Monkey]:
+    output = dict()
+    for config_list in parsed:
+        iter_config = iter(config_list)
+        monkey_num = int(next(iter_config).split(" ")[-1].replace(":", ""))
+        output[monkey_num] = (Monkey()
+            .parse_items(next(iter_config))
+            .parse_operation(next(iter_config))
+            .parse_test(
+                next(iter_config),
+                next(iter_config),
+                next(iter_config)
+            )
+        )
+    
+    return output
+
 
 if __name__ == "__main__":
     with open("input.txt") as f:
         input = f.read()
     parsed_input = parse_input(input)
     print(parsed_input)
-    print([len(x) for x in parsed_input])
+    monkeys = get_monkeys(parsed_input)
+    print(monkeys)
+
+    
 
 
 class TestMonkey(TestCase):
