@@ -16,14 +16,23 @@ class Monkey:
 
     def parse_operation(self, s: str) -> Self:
         operator, number = s.replace("Operation: new = old ", "").split(" ")
-        number = int(number)
-        match operator:
-            case '+':
-                self.operation =  lambda x: x + number
-            case '*':
-                self.operation = lambda x: x * number
-            case _:
-                raise Exception('Unknown operator')
+        if number == 'old':
+            match operator:
+                case '+':
+                    self.operation =  lambda x: x + x
+                case '*':
+                    self.operation = lambda x: x * x
+                case _:
+                    raise Exception('Unknown Operation')
+        else:
+            number = int(number)
+            match operator:
+                case '+':
+                    self.operation =  lambda x: x + number
+                case '*':
+                    self.operation = lambda x: x * number
+                case _:
+                    raise Exception('Unknown Operation')
 
 
 def parse_input(input: str) -> List[List[str]]:
@@ -58,8 +67,8 @@ class TestMonkey(TestCase):
         m.parse_operation(op_string)
         self.assertEqual(m.operation(2), 2 + 19)
         
-    # def test_parse_items(self):
-        # m = Monkey()
-        # op_string = "Operation: new = old * old"
-        # m.parse_operation(op_string)
-        # self.assertEqual(m.operation, lambda x: x * x)
+    def test_parse_items(self):
+        m = Monkey()
+        op_string = "Operation: new = old * old"
+        m.parse_operation(op_string)
+        self.assertEqual(m.operation(2), 4)
