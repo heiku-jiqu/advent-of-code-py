@@ -39,12 +39,44 @@ class Node:
             'r':(x + 1, y), 'l':(x - 1, y), 'u':(x, y + 1), 'd':(x, y - 1)
         }
 
+def find_shortest_path(queue: dict[tuple, Node], start_pos: tuple, forward: bool = True) -> dict[tuple, tuple]:
+    previous_node = dict()
+    queue[start_pos].distance = 0
+
+    while len(queue) > 0:
+        min_dist_node_key = min(queue, key=lambda x: queue.get(x).distance)
+        min_dist_node = queue.pop(min_dist_node_key )
+
+        for key in min_dist_node.neighbour_pos.values():
+            if key in queue:
+                neighbor = queue[key]
+                if forward:
+                    constraint = neighbor.height <= min_dist_node.height + 1
+                else:
+                    constraint = neighbor.height + 1 >= min_dist_node.height 
+                if constraint:
+                    current_distance = min_dist_node.distance + 1
+                    if current_distance < neighbor.distance:
+                        neighbor.distance = current_distance
+                        previous_node[key] = min_dist_node_key
+    return previous_node
+
+def calculate_length(path_nodes: dict[tuple, tuple], end_pos: tuple) -> int:
+    trace_node = path_nodes[end_pos]
+    length_of_path = 0
+    while True:
+        length_of_path += 1 
+        try:
+            trace_node = path_nodes[trace_node]
+        except KeyError:
+            break
+    return length_of_path
+
 if __name__ == "__main__":
     with open("input.txt") as f:
         input = [line.strip() for line in f.readlines()]
 
     queue = dict()
-    previous_node = dict()
     start_pos: tuple
     end_pos: tuple
     for row, line in enumerate(input):
@@ -55,34 +87,33 @@ if __name__ == "__main__":
                 end_pos = (row, col)
             queue[(row, col)] = Node((row, col), char)
 
-    queue[start_pos].distance = 0
+    part1_ans = calculate_length(find_shortest_path(queue, start_pos), end_pos)
+    print(f"Part 1: {part1_ans}")
 
-    while len(queue) > 0:
-        min_dist_node_key = min(queue, key=lambda x: queue.get(x).distance)
-        min_dist_node = queue.pop(min_dist_node_key )
+    # Part 2
+    E_square_pos = end_pos
+    a_square_pos_list = list()
+    for row, line in enumerate(input):
+        for col, char in enumerate(line):
+            if char in ['S', 'a']:
+                a_square_pos_list.append((row, col))
+            queue[(row, col)] = Node((row, col), char)
 
-        for key in min_dist_node.neighbour_pos.values():
-            # if key == end_pos:
-                # print('breaking while loop')
-            if key in queue:
-                neighbor = queue[key]
-                if neighbor.height <= min_dist_node.height + 1:
-                    current_distance = min_dist_node.distance + 1
-                    if current_distance < neighbor.distance:
-                        neighbor.distance = current_distance
-                        previous_node[key] = min_dist_node_key
-
-    # print(previous_node)
-    trace_node = previous_node[end_pos]
-    length_of_path = 0
-    while True:
-        length_of_path += 1 
-        try:
-           trace_node = previous_node[trace_node]
-        except KeyError:
-            break
+    part2_paths = find_shortest_path(queue, E_square_pos, forward=False)
+    part2_ans = inf
     
-    print(f"Part 1: {length_of_path}")
+    for a_square in a_square_pos_list:
+        try:
+            length = calculate_length(part2_paths, a_square)
+            # print(length, a_square)
+            part2_ans = min(part2_ans, length)
+        except:
+            continue
+
+    print(f"Part 2: {part2_ans}") 
+    
+
+
 
 
 class TestNode(TestCase):
