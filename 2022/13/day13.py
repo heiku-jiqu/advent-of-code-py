@@ -2,6 +2,7 @@ from unittest import TestCase
 from itertools import zip_longest
 
 def compare_packet(left: list, right: list) -> bool:
+    # zip_longest pads with None when iterable runs out of items
     for l, r in zip_longest(left, right):
         match (l, r):
             case (int(l), int(r)):
@@ -23,6 +24,10 @@ def compare_packet(left: list, right: list) -> bool:
             case (int(l), list(r)):
                 print('l int', 'r list')
                 return compare_packet([l], r)
+            case (None, _):
+                return True
+            case (_, None):
+                return False
             case _:
                 print('unmatched')
 
