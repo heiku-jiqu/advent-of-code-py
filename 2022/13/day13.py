@@ -1,24 +1,34 @@
 from unittest import TestCase
 
 
-def compare_packet(left: list[int], right: list[int]) -> bool:
+def compare_packet(left: list, right: list) -> bool:
     for l, r in zip(left, right):
         match (l, r):
             case (int(l), int(r)):
-                if l == r:
+                r = compare_integers(l, r)
+                if r is None:
                     continue
                 else:
-                    return compare_integers(l, r)
+                    return r
             case (list(l), list(r)):
                 print('both lists')
+                r = compare_packet(l, r)
+                if r is None:
+                    continue
+                else:
+                    return r
             case (list(l), int(r)):
                 print('l list, r int')
+                return compare_packet(l, [r])
             case (int(l), list(r)):
                 print('l int', 'r list')
+                return compare_packet([l], r)
             case _:
                 print('unmatched')
 
-def compare_integers(l: int, r: int) -> bool:
+def compare_integers(l: int, r: int) -> None | bool:
+    if l == r:
+        return None
     if l > r:
         return False
     else:
