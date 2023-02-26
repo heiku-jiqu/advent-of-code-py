@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+from itertools import zip_longest
 
 def compare_packet(left: list, right: list) -> bool:
     for l, r in zip(left, right):
@@ -42,12 +42,42 @@ if __name__ == "__main__":
 
 
 class TestComparisons(TestCase):
-    def test_all_integers(self):
+    def test_pair1(self):
         left = [1, 1, 3, 1, 1]
         right = [1, 1, 5, 1, 1]
         self.assertTrue(compare_packet(left, right))
     
-    def test_all_lists(self):
+    def test_pair2(self):
         left = [[1],[2,3,4]] 
         right = [[1],4]
         self.assertTrue(compare_packet(left, right))
+    
+    def test_pair3(self):
+        left = [9]
+        right = [[8,7,6]]
+        self.assertFalse(compare_packet(left, right))
+
+    def test_pair4(self):
+        left = [[4,4],4,4]
+        right = [[4,4],4,4,4]
+        self.assertTrue(compare_packet(left, right))
+
+    def test_pair5(self):
+        left = [7,7,7,7]
+        right = [[8,7,6]]
+        self.assertFalse(compare_packet(left, right))
+
+    def test_pair6(self):
+        left = []
+        right = [3]
+        self.assertTrue(compare_packet(left, right))
+
+    def test_pair7(self):
+        left = [[[]]]
+        right = [[]]
+        self.assertFalse(compare_packet(left, right))
+
+    def test_pair8(self):
+        left = [1,[2,[3,[4,[5,6,7]]]],8,9]
+        right = [1,[2,[3,[4,[5,6,0]]]],8,9]
+        self.assertFalse(compare_packet(left, right))
