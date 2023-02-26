@@ -2,7 +2,7 @@ from unittest import TestCase
 from itertools import zip_longest
 
 def compare_packet(left: list, right: list) -> bool:
-    for l, r in zip(left, right):
+    for l, r in zip_longest(left, right):
         match (l, r):
             case (int(l), int(r)):
                 r = compare_integers(l, r)
