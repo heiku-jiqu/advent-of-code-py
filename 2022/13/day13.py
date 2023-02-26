@@ -12,24 +12,21 @@ def compare_packet(left: list, right: list) -> bool:
                 else:
                     return r
             case (list(l), list(r)):
-                print('both lists')
                 r = compare_packet(l, r)
                 if r is None:
                     continue
                 else:
                     return r
             case (list(l), int(r)):
-                print('l list, r int')
                 return compare_packet(l, [r])
             case (int(l), list(r)):
-                print('l int', 'r list')
                 return compare_packet([l], r)
             case (None, _):
                 return True
             case (_, None):
                 return False
             case _:
-                print('unmatched')
+                raise Exception('unmatched pattern!')
 
 def compare_integers(l: int, r: int) -> None | bool:
     if l == r:
@@ -69,7 +66,7 @@ class TestComparisons(TestCase):
 
     def test_pair5(self):
         left = [7,7,7,7]
-        right = [[8,7,6]]
+        right = [7,7,7] 
         self.assertFalse(compare_packet(left, right))
 
     def test_pair6(self):
