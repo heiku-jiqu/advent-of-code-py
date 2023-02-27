@@ -1,5 +1,5 @@
 from unittest import TestCase
-from itertools import zip_longest
+from itertools import zip_longest, compress
 
 def compare_packet(left: list, right: list) -> bool:
     # zip_longest pads with None when iterable runs out of items
@@ -39,8 +39,26 @@ def compare_integers(l: int, r: int) -> None | bool:
 
 if __name__ == "__main__":
     with open("input.txt") as f:
-        input = f.readlines()
-    print(input)
+        input = f.read()
+    packets_list = input.split('\n\n')
+
+    part1_right_order = list()
+    for pair in packets_list:
+        (packet_left, packet_right) = [x for x in pair.split('\n') if x != '']
+        left = eval(packet_left)
+        right = eval(packet_right)
+        ans = compare_packet(left, right)
+        part1_right_order.append(ans)
+    
+    part1_answer = sum(
+        compress(
+            map(lambda x: x + 1, list(range(len(part1_right_order)))),
+            part1_right_order
+    ))
+
+    print(f"Part 1: {part1_answer}")
+    
+
 
 
 class TestComparisons(TestCase):
