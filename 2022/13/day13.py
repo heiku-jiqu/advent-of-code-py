@@ -1,5 +1,6 @@
 from unittest import TestCase
 from itertools import zip_longest, compress
+from functools import cmp_to_key
 
 def compare_packet(left: list, right: list) -> bool:
     # zip_longest pads with None when iterable runs out of items
@@ -18,9 +19,17 @@ def compare_packet(left: list, right: list) -> bool:
                 else:
                     return r
             case (list(l), int(r)):
-                return compare_packet(l, [r])
+                r = compare_packet(l, [r])
+                if r is None:
+                    continue
+                else: 
+                    return r
             case (int(l), list(r)):
-                return compare_packet([l], r)
+                r = compare_packet([l], r)
+                if r is None:
+                    continue
+                else: 
+                    return r
             case (None, _):
                 return True
             case (_, None):
@@ -57,9 +66,22 @@ if __name__ == "__main__":
     ))
 
     print(f"Part 1: {part1_answer}")
+
+    with open("input.txt") as f:
+        input = f.read()
+    part2_packets = input.replace('\n\n', '\n').split('\n')[:-1]
+    part2_packets_list = [eval(p) for p in part2_packets]
+    part2_packets_list.append([[2]])
+    part2_packets_list.append([[6]])
+    sorted_part2_packets_list = sorted(
+        part2_packets_list,
+        key = cmp_to_key(lambda x,y: -1 if compare_packet(x,y) else 1)
+    )
+    divider1_index = sorted_part2_packets_list.index([[2]]) + 1
+    divider2_index = sorted_part2_packets_list.index([[6]]) + 1
+    part2_answer = divider1_index * divider2_index
+    print(f"Part 2: {part2_answer}")
     
-
-
 
 class TestComparisons(TestCase):
     def test_pair1(self):
@@ -101,3 +123,9 @@ class TestComparisons(TestCase):
         left = [1,[2,[3,[4,[5,6,7]]]],8,9]
         right = [1,[2,[3,[4,[5,6,0]]]],8,9]
         self.assertFalse(compare_packet(left, right))
+    
+    def test_pair9(self):
+        left = [[], [[6]]]
+        right = [[], [6, 1, []]]
+        self.assertTrue(compare_packet(left,right))
+
