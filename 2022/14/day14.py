@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from unittest import TestCase
+from itertools import pairwise
 
 
 @dataclass
@@ -41,12 +42,21 @@ if __name__ == "__main__":
         input = [x.strip() for x in f.readlines()]
     print(input)
     
+def parse_string_to_coord_list(s: str) -> list[Coord]:
+    list_of_coords_string = s.split(' -> ')
+    out = list()
+    for coord_str in list_of_coords_string:
+        x, y = coord_str.split(',')
+        out.append(Coord(int(x),int(y)))
+    return out
+
 class TestClasses(TestCase):
-    def ParseStringToCoordList(self):
+    def test_parse_string_to_coord_list(self):
         input = "498,4 -> 498,6 -> 496,6"
         output = [Coord(498,4), Coord(498,6), Coord(496,6)]
         self.assertEqual(parse_string_to_coord_list(input), output)
-    def TestInitTrace(self):
+
+    def test_init_trace(self):
         input = [Coord(498,4), Coord(498,6), Coord(496,6)]
         output = [Coord(498,4), Coord(498,5), Coord(498,6), Coord(497,6), Coord(496,6)]
         tile = Trace(input)
