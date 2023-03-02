@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from unittest import TestCase
 from itertools import pairwise
+from typing import Self
 
 
 @dataclass
@@ -8,17 +9,26 @@ class Coord:
     x: int
     y: int
 
+    def distance_to(self, other: Self) -> tuple[int,int]:
+        return (other.x - self.x, other.y - self.y)
+        
 class Trace:
     tiles: list[Coord]
 
     def __init__(self, coord_joints: list[Coord]) -> None:
-        tiles = list()
+        self.tiles = list()
         for start, end in pairwise(coord_joints):
             match start.distance_to(end):
                 case (int(diff_x), 0):
-                    tiles.expand([Coord(start.x + i,start.y) for i in range(diff_x)])
+                    print('matched x')
+                    # bugged cause diff_x is negative
+                    self.tiles.extend(Coord(start.x + i, start.y) for i in range(diff_x)) 
+                case (0, int(diff_y)):
+                    print('matched y')
+                    self.tiles.extend(Coord(start.x, start.y + i) for i in range(diff_y+1))
                 case _:
                     print('unmatched')
+    
 
 # parse rocks path into full coords
 # Grid class with accessor of tile?
@@ -51,6 +61,14 @@ def parse_string_to_coord_list(s: str) -> list[Coord]:
     return out
 
 class TestClasses(TestCase):
+    def test_distance_to(self):
+        start = Coord(1,2)
+        end = Coord(2,4)
+        self.assertEqual(
+            start.distance_to(end),
+            (1,2)
+        )
+
     def test_parse_string_to_coord_list(self):
         input = "498,4 -> 498,6 -> 496,6"
         output = [Coord(498,4), Coord(498,6), Coord(496,6)]
