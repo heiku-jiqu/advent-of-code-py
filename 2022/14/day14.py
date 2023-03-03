@@ -96,23 +96,6 @@ class Grid(dict[Coord, TileType]):
         else:
             return None
 
-# parse rocks path into full coords
-# Grid class with accessor of tile?
-# Find bounding box of all rocks
-# 
-
-# sand_in_bounding_box = True
-# while sand_in_bounding_box:
-#   produce_one_sand
-#   while sand_not_at_rest:
-#       try move_sand
-#           down or left or right
-#       else all_possible_paths_blocked
-#           set_sand_at_rest
-#   sand_in_bounding_box = grid_check_sand_in_bounding_box
-# 
-# grid_calculate_number_of_sand_at_rest
-
 def parse_string_to_coord_list(s: str) -> list[Coord]:
     list_of_coords_string = s.split(' -> ')
     out = list()
