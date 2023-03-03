@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from unittest import TestCase
-from itertools import pairwise
-from typing import Self
+from itertools import pairwise, chain
+from typing import Self, NamedTuple
+from enum import StrEnum, auto
 
 
-@dataclass
-class Coord:
+class Coord(NamedTuple):
     x: int
     y: int
 
@@ -20,17 +20,27 @@ class Trace:
         for start, end in pairwise(coord_joints):
             match start.distance_to(end):
                 case (int(diff_x), 0):
-                    print('matched x')
                     sign = int(diff_x / abs(diff_x))
                     self.tiles.extend(Coord(start.x + i, start.y) for i in range(0, diff_x, sign)) 
                 case (0, int(diff_y)):
-                    print('matched y')
                     sign = int(diff_y / abs(diff_y))
                     self.tiles.extend(Coord(start.x, start.y + i) for i in range(0, diff_y, sign))
                 case _:
-                    print('unmatched')
+                    raise Exception('Unexpected diagonal scan')
         self.tiles.append(coord_joints[-1])
     
+class TileType(StrEnum):
+    SAND = auto()
+    AIR = auto()
+    ROCK = auto()
+
+class Grid(dict[Coord, TileType]):
+    def __missing__(self, key):
+        if key not in self:
+            self[key] = TileType.AIR
+
+    def produce_one_sand(self):
+        self[Coord(500,0)] = TileType.SAND
 
 # parse rocks path into full coords
 # Grid class with accessor of tile?
@@ -83,4 +93,14 @@ class TestClasses(TestCase):
         self.assertEqual(
             tile.tiles,
             output
+        )
+    
+    def test_init_grid(self):
+        input = [Trace([Coord(498,4), Coord(498,6), Coord(496,6)]),
+                 Trace([Coord(503,4), Coord(502,4), Coord(502,9), Coord(494,9)])]
+        coords = [trace.tiles for trace in input]
+        grid = Grid({coord:TileType.ROCK for coord in chain(*coords)})
+        grid.produce_one_sand()
+        self.assertEqual(
+            grid[Coord(500,0)], TileType.SAND
         )
