@@ -40,7 +40,9 @@ class Grid(dict[Coord, TileType]):
             self[key] = TileType.AIR
 
     def produce_one_sand(self):
-        self[Coord(500,0)] = TileType.SAND
+        c = Coord(500,0)
+        self[c] = TileType.SAND
+        return c
     
     def get_leftmost_rock(self) -> int:
         return min(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
@@ -52,7 +54,35 @@ class Grid(dict[Coord, TileType]):
         return max(coord.y for coord, tile in self.items() if tile == TileType.ROCK)
     
     def check_coord_reached_endless(self, c: Coord) -> bool:
-        return c.x >= self.get_rightmost_rock() or c.x <= self.get_leftmost_rock() or c.y <= self.get_bottommost_rock()
+        return c.x >= self.get_rightmost_rock() or c.x <= self.get_leftmost_rock() or c.y >= self.get_bottommost_rock()
+    
+    def move_sand(self, c: Coord) -> Coord | None:
+        '''
+        move sand at Coord c.
+        If able to, return new Coord of sand,
+        else, return None
+        '''
+        assert self[c] == TileType.SAND
+        down = Coord(c.x, c.y + 1)
+        left_down = Coord(c.x - 1, c.y + 1)
+        right_down = Coord(c.x + 1, c.y + 1)
+        self[down]
+        self[left_down]
+        self[right_down]
+        if self[down] == TileType.AIR:
+            self[c] = TileType.AIR
+            self[down] = TileType.SAND
+            return down
+        elif self[left_down] == TileType.AIR:
+            self[c] = TileType.AIR
+            self[left_down] = TileType.SAND
+            return left_down
+        elif self[right_down] == TileType.AIR:
+            self[c] = TileType.AIR
+            self[right_down] = TileType.SAND
+            return right_down
+        else:
+            return None
 
 # parse rocks path into full coords
 # Grid class with accessor of tile?
@@ -71,11 +101,6 @@ class Grid(dict[Coord, TileType]):
 # 
 # grid_calculate_number_of_sand_at_rest
 
-if __name__ == "__main__":
-    with open('input.txt') as f:
-        input = [x.strip() for x in f.readlines()]
-    print(input)
-    
 def parse_string_to_coord_list(s: str) -> list[Coord]:
     list_of_coords_string = s.split(' -> ')
     out = list()
@@ -83,6 +108,31 @@ def parse_string_to_coord_list(s: str) -> list[Coord]:
         x, y = coord_str.split(',')
         out.append(Coord(int(x),int(y)))
     return out
+
+if __name__ == "__main__":
+    with open('input.txt') as f:
+        input = [x.strip() for x in f.readlines()]
+    
+    coord_list = [parse_string_to_coord_list(x) for x in input]
+    traces = [Trace(x) for x in coord_list]
+    all_rocks_traces = [trace.tiles for trace in traces]
+    grid = Grid({coord:TileType.ROCK for coord in chain(*all_rocks_traces)})
+
+    sand_in_bounding_box = True
+    num_sand_at_rest = 0
+    while sand_in_bounding_box:
+        curr_active_sand_coord = grid.produce_one_sand()
+        while True:
+            curr_active_sand_coord = grid.move_sand(curr_active_sand_coord)
+            if curr_active_sand_coord is None:
+                num_sand_at_rest += 1
+                print(num_sand_at_rest)
+                break
+            elif grid.check_coord_reached_endless(curr_active_sand_coord):
+                print('not in bounded box')
+                sand_in_bounding_box = False
+                break
+    print(f"Part 1: {num_sand_at_rest}")
 
 class TestClasses(TestCase):
     def test_distance_to(self):
@@ -132,4 +182,11 @@ class TestClasses(TestCase):
         )
         self.assertTrue(
             grid.check_coord_reached_endless(Coord(498, 9))
+        )
+        self.assertEqual(
+            grid.move_sand(Coord(500,0)),
+            Coord(500, 1)
+        )
+        self.assertEqual(
+            grid[Coord(500,1)], TileType.SAND
         )
