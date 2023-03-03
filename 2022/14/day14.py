@@ -21,13 +21,15 @@ class Trace:
             match start.distance_to(end):
                 case (int(diff_x), 0):
                     print('matched x')
-                    # bugged cause diff_x is negative
-                    self.tiles.extend(Coord(start.x + i, start.y) for i in range(diff_x)) 
+                    sign = int(diff_x / abs(diff_x))
+                    self.tiles.extend(Coord(start.x + i, start.y) for i in range(0, diff_x, sign)) 
                 case (0, int(diff_y)):
                     print('matched y')
-                    self.tiles.extend(Coord(start.x, start.y + i) for i in range(diff_y+1))
+                    sign = int(diff_y / abs(diff_y))
+                    self.tiles.extend(Coord(start.x, start.y + i) for i in range(0, diff_y, sign))
                 case _:
                     print('unmatched')
+        self.tiles.append(coord_joints[-1])
     
 
 # parse rocks path into full coords
