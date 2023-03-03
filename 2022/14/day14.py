@@ -41,6 +41,18 @@ class Grid(dict[Coord, TileType]):
 
     def produce_one_sand(self):
         self[Coord(500,0)] = TileType.SAND
+    
+    def get_leftmost_rock(self) -> int:
+        return min(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
+    
+    def get_rightmost_rock(self) -> int:
+        return max(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
+        
+    def get_bottommost_rock(self) -> int:
+        return max(coord.y for coord, tile in self.items() if tile == TileType.ROCK)
+    
+    def check_coord_reached_endless(self, c: Coord) -> bool:
+        return c.x >= self.get_rightmost_rock() or c.x <= self.get_leftmost_rock() or c.y <= self.get_bottommost_rock()
 
 # parse rocks path into full coords
 # Grid class with accessor of tile?
@@ -103,4 +115,21 @@ class TestClasses(TestCase):
         grid.produce_one_sand()
         self.assertEqual(
             grid[Coord(500,0)], TileType.SAND
+        )
+        self.assertEqual(
+            (grid.get_leftmost_rock(), grid.get_rightmost_rock(), grid.get_bottommost_rock()),
+            (494, 503, 9)
+        )
+        grid[Coord(0,0)] = TileType.AIR
+        self.assertEqual(
+            grid.get_leftmost_rock(), 494
+        )
+        self.assertTrue(
+            grid.check_coord_reached_endless(Coord(494, 2))
+        )
+        self.assertTrue(
+            grid.check_coord_reached_endless(Coord(503, 2))
+        )
+        self.assertTrue(
+            grid.check_coord_reached_endless(Coord(498, 9))
         )
