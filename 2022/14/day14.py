@@ -96,6 +96,38 @@ class Grid(dict[Coord, TileType]):
         else:
             return None
 
+    def run_part1_simulation(self):
+        sand_in_bounding_box = True
+        num_sand_at_rest = 0
+        while sand_in_bounding_box:
+            curr_active_sand_coord = self.produce_one_sand()
+            while True:
+                curr_active_sand_coord = self.move_sand(curr_active_sand_coord)
+                if curr_active_sand_coord is None:
+                    num_sand_at_rest += 1
+                    break
+                elif self.check_coord_reached_endless(curr_active_sand_coord):
+                    sand_in_bounding_box = False
+                    break
+        return num_sand_at_rest
+    
+    def run_part2_simulation(self):
+        floor_y = self.get_bottommost_rock() + 2
+        floor_trace = Trace([Coord(-1_000_000, floor_y),  Coord(1_000_000, floor_y)])
+        self.update({k:TileType.ROCK for k in floor_trace.tiles})
+        sand_not_on_start = True
+        num_sand_at_rest = 0
+        while sand_not_on_start:
+            if self[Coord(500,0)] == TileType.SAND:
+                break
+            curr_active_sand_coord = self.produce_one_sand()
+            while True:
+                curr_active_sand_coord = self.move_sand(curr_active_sand_coord)
+                if curr_active_sand_coord is None:
+                    num_sand_at_rest += 1
+                    break
+        return num_sand_at_rest
+
 def parse_string_to_coord_list(s: str) -> list[Coord]:
     list_of_coords_string = s.split(' -> ')
     out = list()
@@ -112,21 +144,14 @@ if __name__ == "__main__":
     traces = [Trace(x) for x in coord_list]
     all_rocks_traces = [trace.tiles for trace in traces]
     grid = Grid({coord:TileType.ROCK for coord in chain(*all_rocks_traces)})
-
-    sand_in_bounding_box = True
-    num_sand_at_rest = 0
-    while sand_in_bounding_box:
-        curr_active_sand_coord = grid.produce_one_sand()
-        while True:
-            curr_active_sand_coord = grid.move_sand(curr_active_sand_coord)
-            if curr_active_sand_coord is None:
-                num_sand_at_rest += 1
-                break
-            elif grid.check_coord_reached_endless(curr_active_sand_coord):
-                sand_in_bounding_box = False
-                break
+    num_sand_at_rest_part1 = grid.run_part1_simulation()
     
-    print(f"Part 1: {num_sand_at_rest}")
+    print(f"Part 1: {num_sand_at_rest_part1}")
+
+    grid2 = Grid({coord:TileType.ROCK for coord in chain(*all_rocks_traces)})
+
+    print(f"Part 2: {grid2.run_part2_simulation()}")
+    
 
 class TestClasses(TestCase):
     def test_distance_to(self):
