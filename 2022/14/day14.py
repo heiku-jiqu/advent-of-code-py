@@ -45,13 +45,25 @@ class Grid(dict[Coord, TileType]):
         return c
     
     def get_leftmost_rock(self) -> int:
-        return min(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
-    
+        try:
+            return self.leftmost_rock 
+        except AttributeError:
+            self.leftmost_rock = min(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
+        return self.leftmost_rock
+
     def get_rightmost_rock(self) -> int:
-        return max(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
+        try:
+            return self.rightmost_rock 
+        except AttributeError:
+            self.rightmost_rock = max(coord.x for coord, tile in self.items() if tile == TileType.ROCK)
+        return self.rightmost_rock
         
     def get_bottommost_rock(self) -> int:
-        return max(coord.y for coord, tile in self.items() if tile == TileType.ROCK)
+        try: 
+            return self.bottommost_rock 
+        except AttributeError:
+            self.bottommost_rock = max(coord.y for coord, tile in self.items() if tile == TileType.ROCK)
+        return self.bottommost_rock
     
     def check_coord_reached_endless(self, c: Coord) -> bool:
         return c.x >= self.get_rightmost_rock() or c.x <= self.get_leftmost_rock() or c.y >= self.get_bottommost_rock()
@@ -126,12 +138,11 @@ if __name__ == "__main__":
             curr_active_sand_coord = grid.move_sand(curr_active_sand_coord)
             if curr_active_sand_coord is None:
                 num_sand_at_rest += 1
-                print(num_sand_at_rest)
                 break
             elif grid.check_coord_reached_endless(curr_active_sand_coord):
-                print('not in bounded box')
                 sand_in_bounding_box = False
                 break
+    
     print(f"Part 1: {num_sand_at_rest}")
 
 class TestClasses(TestCase):
