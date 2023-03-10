@@ -70,5 +70,13 @@ if __name__ == "__main__":
         cache[(time, valve, valve_state)] = maxval
         return maxval
 
-    part1_ans = {search(30, "AA", 0)}
+    part2_ans = 0
+    xor_mask = (1 << len(valve_index)) - 1
+    for state in range(xor_mask + 1):
+        part2_ans = max(
+            part2_ans, search(26, "AA", state) + search(26, "AA", state ^ xor_mask)
+        )
+
+    part1_ans = search(30, "AA", 0)
     print(f"Part 1: {part1_ans}")
+    print(f"Part 2: {part2_ans}")
